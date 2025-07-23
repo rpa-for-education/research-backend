@@ -10,7 +10,7 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 // Cấu hình CORS để cho phép frontend cục bộ
-app.use(cors({ origin: 'http://localhost:5173' }));
+app.use(cors({ origin: ['http://localhost:5173', 'https://research-frontend-henna.vercel.app'] }));
 app.use(express.json());
 
 // Khởi tạo Gemini API
