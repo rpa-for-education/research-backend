@@ -20,14 +20,14 @@ const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 // Lấy dữ liệu bài viết
 async function fetchArticles() {
   try {
-    const response = await axios.get('https://api.rpa4edu.shop/api_bai_viet.php');
-    console.log('Dữ liệu bài viết:', JSON.stringify(response.data, null, 2)); // Log chi tiết
+    const response = await axios.get('https://api.rpa4edu.shop/api_research.php');
+    console.log('Dữ liệu hội thảo:', JSON.stringify(response.data, null, 2)); // Log chi tiết
     if (!Array.isArray(response.data)) {
-      throw new Error('Dữ liệu bài viết không phải mảng');
+      throw new Error('Dữ liệu hội thảo không phải mảng');
     }
     return response.data;
   } catch (error) {
-    console.error('Lỗi khi lấy bài viết:', error.response?.data || error.message);
+    console.error('Lỗi khi lấy hội thảo:', error.response?.data || error.message);
     return [];
   }
 }
@@ -35,14 +35,14 @@ async function fetchArticles() {
 // Tạo prompt cho Gemini
 function createPrompt(articles, question) {
   if (!articles.length) {
-    return `Không có dữ liệu bài viết. Câu hỏi: ${question}`;
+    return `Không có dữ liệu hội thảo. Câu hỏi: ${question}`;
   }
-  let context = 'Dựa trên các bài viết sau để trả lời câu hỏi:\n\n';
-  // Giới hạn 5 bài viết để tránh vượt token
-  articles.slice(0, 5).forEach((article, index) => {
-    context += `Bài viết ${index + 1}:\nTiêu đề: ${article.title || 'Không có tiêu đề'}\nNội dung: ${article.content || 'Không có nội dung'}\n\n`;
+  let context = 'Dựa trên thông tin các hội thảo sau để trả lời câu hỏi:\n\n';
+  // Giới hạn 10 bài viết để tránh vượt token
+  articles.slice(0, 10).forEach((article, index) => {
+    context += `Hội thảo ${index + 1}:\nHội thảo: ${article.acronym || 'Không có nội dung'}\nTên hội thảo: ${article.name || 'Không có nội dung'}\nĐịa điểm tổ chức: ${article.location || 'Không có nội dung'}\nHạn nộp bài: ${article.deadline || 'Không có nội dung'}\nNgày tổ chức hội thảo: ${article.start_date || 'Không có nội dung'}\nChủ đề: ${article.topics || 'Không có nội dung'}\nLink thông tin hội thảo: ${article.url || 'Không có nội dung'}\n\n`;
   });
-  context += `Câu hỏi: ${question}\nHãy trả lời câu hỏi dựa trên nội dung các bài viết, nếu không có thông tin liên quan, hãy nói rõ.`;
+  context += `Câu hỏi: ${question}\nHãy trả lời câu hỏi dựa trên nội dung các hội thảo, nếu không có thông tin liên quan, hãy nói rõ.`;
   return context;
 }
 
