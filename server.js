@@ -6,7 +6,7 @@ import axios from 'axios';
 
 dotenv.config();
 
-const app = express();
+// const app = express();
 const port = process.env.PORT || 3000;
 
 // Cấu hình CORS để cho phép frontend cục bộ
@@ -32,7 +32,7 @@ app.use(cors({
 
 // Xử lý preflight request thủ công (nếu cần)
 app.options('*', cors());
-app.use(express.json());
+// app.use(express.json());
 
 // Khởi tạo Gemini API
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
