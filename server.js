@@ -3,6 +3,7 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import axios from 'axios';
+import cors from 'cors';
 
 dotenv.config();
 
@@ -10,7 +11,28 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 // Cấu hình CORS để cho phép frontend cục bộ
-app.use(cors({ origin: ['http://localhost:5173', 'https://research-frontend-henna.vercel.app'] }));
+// Danh sách domain được phép
+const allowedOrigins = [
+  'http://localhost:5173',
+  'https://research-frontend-henna.vercel.app',
+  'https://research.neu.edu.vn'
+];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true); // Cho phép
+    } else {
+      callback(new Error('Không được phép truy cập bởi CORS'));
+    }
+  },
+  methods: ['GET', 'POST', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
+}));
+
+// Xử lý preflight request thủ công (nếu cần)
+app.options('*', cors());
 app.use(express.json());
 
 // Khởi tạo Gemini API
