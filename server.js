@@ -1,7 +1,7 @@
 import express from 'express';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import dotenv from 'dotenv';
-import cors from 'cors';
+import corsMiddleware from 'cors';
 import axios from 'axios';
 
 dotenv.config();
@@ -10,7 +10,7 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 // Cấu hình CORS để cho phép frontend cục bộ
-app.use(cors({ origin: ['http://localhost:5173', 'https://research-frontend-henna.vercel.app'] }));
+app.use(corsMiddleware({ origin: ['http://localhost:5173', 'https://research-frontend-henna.vercel.app'] }));
 app.use(express.json());
 
 // Khởi tạo Gemini API
