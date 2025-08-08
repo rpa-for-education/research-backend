@@ -17,16 +17,18 @@ app.use(express.json());
 const allowedOrigins = [
   'http://localhost:5173',
   'https://research-frontend-henna.vercel.app',
+  'https://www.research-frontend-henna.vercel.app',
   'https://research.neu.edu.vn'
 ];
 
-// Cấu hình CORS
+// Cấu hình CORS (đặt trước tất cả routes)
 app.use(
   cors({
-    origin: function (origin, callback) {
+    origin: (origin, callback) => {
       if (!origin || allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
+        console.warn(`CORS bị chặn từ origin: ${origin}`);
         callback(new Error('Không được phép truy cập bởi CORS'));
       }
     },
@@ -46,7 +48,7 @@ const geminiModel = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 // Khởi tạo Qwen API (dùng OpenAI SDK với base_url Qwen)
 const qwenClient = new OpenAI({
   apiKey: process.env.QWEN_API_KEY || '',
-  baseURL: 'https://dashscope-intl.aliyuncs.com/compatible-mode/v1' // Singapore
+  baseURL: 'https://dashscope-intl.aliyuncs.com/compatible-mode/v1' // Singapore endpoint
 });
 
 // Lấy dữ liệu hội thảo
@@ -66,7 +68,14 @@ function createPrompt(articles, question) {
   if (!articles.length) return `Không có dữ liệu hội thảo. Câu hỏi: ${question}`;
   let context = 'Dựa trên thông tin các hội thảo sau để trả lời câu hỏi:\n\n';
   articles.slice(0, 10).forEach((a, i) => {
-    context += `Hội thảo ${i + 1}:\nHội thảo: ${a.acronym || 'Không có'}\nTên: ${a.name || 'Không có'}\nĐịa điểm: ${a.location || 'Không có'}\nHạn nộp: ${a.deadline || 'Không có'}\nNgày tổ chức: ${a.start_date || 'Không có'}\nChủ đề: ${a.topics || 'Không có'}\nLink: ${a.url || 'Không có'}\n\n`;
+    context += `Hội thảo ${i + 1}:
+Hội thảo: ${a.acronym || 'Không có'}
+Tên: ${a.name || 'Không có'}
+Địa điểm: ${a.location || 'Không có'}
+Hạn nộp: ${a.deadline || 'Không có'}
+Ngày tổ chức: ${a.start_date || 'Không có'}
+Chủ đề: ${a.topics || 'Không có'}
+Link: ${a.url || 'Không có'}\n\n`;
   });
   context += `Câu hỏi: ${question}\nHãy trả lời dựa trên nội dung trên, nếu không có thông tin hãy nói rõ.`;
   return context;
@@ -104,5 +113,5 @@ app.post('/api/ask', async (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(`Server chạy tại http://localhost:${port}`);
+  console.log(`✅ Server chạy tại http://localhost:${port}`);
 });
