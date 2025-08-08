@@ -3,7 +3,6 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import axios from 'axios';
-import cors from 'cors';
 
 dotenv.config();
 
